@@ -6813,7 +6813,8 @@ enum UnDrawIllustration {
 }
 
 /// Base url for the illustrations
-const baseUrl = "https://undraw.co/api/illustrations";
+const baseUrl =
+    "https://42f2671d685f51e10fc6-b9fcecea3e50b3b59bdc28dead054ebc.ssl.cf5.rackcdn.com/illustrations";
 
 /// Map of illustrations with url to download
 const illustrationMap = const <UnDrawIllustration, String>{
