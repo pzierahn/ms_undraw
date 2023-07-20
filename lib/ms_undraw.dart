@@ -107,7 +107,7 @@ class UnDraw extends StatelessWidget {
       height: height,
       width: width,
       alignment: alignment,
-      colorBlendMode: colorBlendMode,
+      colorFilter: ColorFilter.mode(color, colorBlendMode),
       fit: fit,
       semanticsLabel: semanticLabel,
     );
