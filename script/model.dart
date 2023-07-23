@@ -31,7 +31,8 @@ class Illustration {
         illustrations: json["illos"] == null
             ? null
             : List<IllustrationElement>.from(
-                json["illos"].map((x) => IllustrationElement.fromMap(x))),
+                json["illos"].map((x) => IllustrationElement.fromMap(x)),
+              ),
         hasMore: json["hasMore"] == null ? null : json["hasMore"],
         nextPage: json["nextPage"] == null ? null : json["nextPage"],
       );

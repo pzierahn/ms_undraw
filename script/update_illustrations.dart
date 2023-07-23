@@ -11,9 +11,10 @@ part 'model.dart';
 void main(List<String> args) async {
   final _illustrations = await _getIllustrations();
   final _enumList = _getEnuns(_illustrations);
-  final _baseUrl = 'https://42f2671d685f51e10fc6-b9fcecea3e50b3b59bdc28dead054ebc.ssl.cf5.rackcdn.com/illustrations';
+
   final _identifierAndUrl = _getIdentifierAndUrl(_illustrations);
-  await _updateFile(_enumList, _baseUrl, _identifierAndUrl);
+
+  await _updateFile(_enumList, _identifierAndUrl);
 
   logger.stdout('Formatting file');
   await Process.run(
@@ -109,33 +110,64 @@ ${_kebabCase(illustration.title!)}''';
   return list;
 }
 
+Future<void> downloadAndWriteSVG(String url, String filename) async {
+  final response = await http.get(Uri.parse(url));
+  if (response.statusCode == 200) {
+    File svgFile = File('illustration/$filename');
+    await svgFile.writeAsBytes(response.bodyBytes);
+  } else {
+    throw Exception('Failed to download SVG from $url');
+  }
+}
+
 List<String> _getIdentifierAndUrl(List<IllustrationElement> illustrations) {
   logger.stdout('Transforming illustrations');
+
+  final list = <String>[];
+
+  for (var ill in illustrations) {
+    final key = "UnDrawIllustration.${_kebabCase(ill.title!)}";
+    daownloadAndWriteSVG();
+  }
+
   final list = illustrations
-      .map((ill) =>
-          "UnDrawIllustration.${_kebabCase(ill.title!)}: '\$baseUrl/${ill.image!.split('/').last}'")
+      .map(
+        (ill) =>
+            "UnDrawIllustration.${_kebabCase(ill.title!)}: '\$baseUrl/${ill.image!.split('/').last}'",
+      )
       .toList();
+
   logger.stdout('Illustrations transformed');
+
   return list;
 }
 
 Future<List<IllustrationElement>> _getIllustrations() async {
   final progress = logger.progress('Downloading undraw illustration list');
-  var _isEnd = false;
-  var _page = 0;
+
+  bool _isEnd = false;
+  int _page = 0;
+
   List<IllustrationElement> _illustrations = [];
+
   do {
     logger.stdout('Downloading page $_page');
-    final http.Response response = await http
-        .get(Uri.parse("https://undraw.co/api/illustrations?page=$_page"));
+
+    final url = Uri.parse("https://undraw.co/api/illustrations?page=$_page");
+    final response = await http.get(url);
+
     final illustrations = Illustration.fromMap(jsonDecode(response.body));
     _isEnd = illustrations.hasMore!;
     _page = illustrations.nextPage!;
+
     _illustrations.addAll(illustrations.illustrations!);
   } while (_isEnd);
+
   progress.finish(
-      message: '${_illustrations.length} undraw illustration list downloaded',
-      showTiming: true);
+    message: '${_illustrations.length} undraw illustration list downloaded',
+    showTiming: true,
+  );
+
   return _illustrations;
 }
 
@@ -148,16 +180,15 @@ String _kebabCase(String value) => value
     .replaceFirst('void', 'void_');
 
 Future _updateFile(
-    List<String> enuns, String baseUrl, List<String> identifierAndUrl) async {
+  List<String> enuns,
+  List<String> identifierAndUrl,
+) async {
   logger.stdout('Writing in file');
   final File _illustrations = File('./lib/illustrations.g.dart');
   final content = '''
 // ignore_for_file: unused_field
 /// Enums to help locate the correct illustration
 enum UnDrawIllustration {${enuns.join(',')}}
-
-/// Base url for the illustrations
-const baseUrl = "$baseUrl";
 
 /// Map of illustrations with url to download
 const illustrationMap = const <UnDrawIllustration, String>{

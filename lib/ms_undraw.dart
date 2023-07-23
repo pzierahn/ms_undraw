@@ -138,7 +138,8 @@ class UnDraw extends StatelessWidget {
   }
 
   Future<String> _getSvgString(String url, [bool useMemCache = true]) async {
-    var uri = Uri.parse(url);
+    final uri = Uri.parse(url);
+
     if (useMemCache) {
       if (!_memCacheSvg.containsKey(url) || _memCacheSvg[url] == null) {
         http.Response response = await http.get(uri);
