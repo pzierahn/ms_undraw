@@ -84,11 +84,8 @@ class UnDraw extends StatelessWidget {
   final EdgeInsets? padding;
 
   Future<SvgPicture> renderIllustration(UnDrawIllustration illustration) async {
-    debugPrint('illustration: $illustration');
-
     String path = "packages/ms_undraw/assets/" + illustrationMap[illustration]!;
     String image = await rootBundle.loadString(path);
-    debugPrint('image: $image');
 
     String valueString = color.toString().split('(0x')[1].split(')')[0];
     valueString = valueString.substring(2, valueString.length);

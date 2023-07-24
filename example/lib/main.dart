@@ -158,8 +158,11 @@ class _MyHomePageState extends State<MyHomePage> {
                               illustration: undraw,
                               placeholder:
                                   const Text("Illustration is loading..."),
-                              errorWidget: const Icon(Icons.error_outline,
-                                  color: Colors.red, size: 50),
+                              errorWidget: const Icon(
+                                Icons.error_outline,
+                                color: Colors.red,
+                                size: 50,
+                              ),
                             ),
                           ),
                         ),
