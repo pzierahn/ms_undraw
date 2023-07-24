@@ -6813,7 +6813,7 @@ enum UnDrawIllustration {
 }
 
 /// Map of illustrations with url to download
-const Map<UnDrawIllustration, String> unDrawIllustrations = {
+const Map<UnDrawIllustration, String> illustrationMap = {
   UnDrawIllustration._3d_modeling: "illustrations/_3d_modeling.svg",
   UnDrawIllustration.a_better_world: "illustrations/a_better_world.svg",
   UnDrawIllustration.a_day_at_the_park: "illustrations/a_day_at_the_park.svg",

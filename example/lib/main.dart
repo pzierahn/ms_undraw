@@ -5,7 +5,7 @@ import 'package:context_menus/context_menus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ms_undraw/ms_undraw.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 void main() => runApp(const MyApp());
 
@@ -16,12 +16,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MS Undraw - Demo',
+      title: 'Undraw',
       theme: ThemeData(
-          primarySwatch: Colors.red, secondaryHeaderColor: Colors.orangeAccent),
+        useMaterial3: false,
+      ),
       home: ContextMenuOverlay(
         child: MyHomePage(
-            title: "${UnDrawIllustration.values.length} Illustrations"),
+          title: "${UnDrawIllustration.values.length} Illustrations",
+        ),
       ),
     );
   }
@@ -44,20 +46,23 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         actions: [
           IconButton(
               onPressed: () {
-                showAboutDialog(context: context, children: [
-                  TextButton(
-                      onPressed: () =>
-                          launch("https://pub.dev/packages/ms_undraw"),
-                      child: const Text('https://pub.dev/packages/ms_undraw')),
-                  TextButton(
-                      onPressed: () => launch("https://undraw.co/"),
-                      child: const Text('https://undraw.co/')),
-                ]);
+                showAboutDialog(
+                  context: context,
+                  children: [
+                    TextButton(
+                        onPressed: () => launchUrlString(
+                            "https://pub.dev/packages/ms_undraw"),
+                        child:
+                            const Text('https://pub.dev/packages/ms_undraw')),
+                    TextButton(
+                        onPressed: () => launchUrlString("https://undraw.co/"),
+                        child: const Text('https://undraw.co/')),
+                  ],
+                );
               },
               icon: const Icon(Icons.info))
         ],
@@ -110,9 +115,8 @@ class _MyHomePageState extends State<MyHomePage> {
           constraints: const BoxConstraints(maxWidth: 1024),
           child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
+                  crossAxisCount: 1,
                   childAspectRatio: 1 / 1,
-                  mainAxisExtent: 285 + 28 + 16,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16),
               padding: const EdgeInsets.all(16),
@@ -123,10 +127,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 return ContextMenuRegion(
                   contextMenu: GenericContextMenu(
                     buttonConfigs: [
-                      ContextMenuButtonConfig("Copy name",
-                          onPressed: () => _copyName(undraw)),
-                      ContextMenuButtonConfig("Copy widget code",
-                          onPressed: () => _copyCode(undraw)),
+                      ContextMenuButtonConfig(
+                        "Copy name",
+                        onPressed: () => _copyName(undraw),
+                      ),
+                      ContextMenuButtonConfig(
+                        "Copy widget code",
+                        onPressed: () => _copyCode(undraw),
+                      ),
                     ],
                   ),
                   child: Container(
@@ -134,25 +142,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Colors.grey.shade100,
                       border: Border.all(color: Colors.grey.shade300),
                       borderRadius: const BorderRadius.all(Radius.circular(16)),
-                      boxShadow: const [
-                        BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 6,
-                            offset: Offset(0, 4))
-                      ],
                     ),
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(_changeName(undraw.name)),
-                        SizedBox(
-                          // height: 220+67,
+                        Text(undraw.name),
+                        Flexible(
                           child: Center(
                             child: UnDraw(
                               color: color,
-                              useMemCache: false,
                               height: 200,
                               width: 200,
                               illustration: undraw,

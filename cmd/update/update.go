@@ -136,7 +136,7 @@ func updateLib(illustrations []Illustration, downloads []string) {
 	dart += `}`
 
 	dart += `/// Map of illustrations with url to download
-			const Map<UnDrawIllustration, String> unDrawIllustrations = {`
+			const Map<UnDrawIllustration, String> illustrationMap = {`
 
 	for inx, filename := range downloads {
 		illustration := illustrations[inx]

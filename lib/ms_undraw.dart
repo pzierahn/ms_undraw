@@ -1,13 +1,11 @@
 library ms_undraw;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:http/http.dart' as http;
 import 'package:ms_undraw/illustrations.g.dart';
 
 export 'package:ms_undraw/illustrations.g.dart';
-
-final _memCacheSvg = <String, String>{};
 
 class UnDraw extends StatelessWidget {
   UnDraw({
@@ -22,7 +20,6 @@ class UnDraw extends StatelessWidget {
     this.placeholder,
     this.errorWidget,
     this.padding,
-    this.useMemCache = true,
   }) : super(key: key);
 
   /// Enum [UnDrawIllustration] with all supported illustrations
@@ -86,17 +83,12 @@ class UnDraw extends StatelessWidget {
   /// see [Decoration.padding].
   final EdgeInsets? padding;
 
-  /// If cache image in memory, if enable reload the same illustration is be more fast
-  final bool useMemCache;
+  Future<SvgPicture> renderIllustration(UnDrawIllustration illustration) async {
+    debugPrint('illustration: $illustration');
 
-  Future<SvgPicture> renderIllustration(
-    UnDrawIllustration illustration,
-    Color _exColor,
-  ) async {
-    String image = await _getSvgString(
-      illustrationMap[illustration]!,
-      this.useMemCache,
-    );
+    String path = "packages/ms_undraw/assets/" + illustrationMap[illustration]!;
+    String image = await rootBundle.loadString(path);
+    debugPrint('image: $image');
 
     String valueString = color.toString().split('(0x')[1].split(')')[0];
     valueString = valueString.substring(2, valueString.length);
@@ -116,7 +108,7 @@ class UnDraw extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: FutureBuilder(
-        future: renderIllustration(illustration, color),
+        future: renderIllustration(illustration),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             return Container(
@@ -124,6 +116,7 @@ class UnDraw extends StatelessWidget {
               child: snapshot.data,
             );
           } else if (snapshot.hasError) {
+            debugPrint('error: ${snapshot.error}');
             return Center(
               child: errorWidget ?? Text('Could not load illustration!'),
             );
@@ -135,20 +128,5 @@ class UnDraw extends StatelessWidget {
         },
       ),
     );
-  }
-
-  Future<String> _getSvgString(String url, [bool useMemCache = true]) async {
-    final uri = Uri.parse(url);
-
-    if (useMemCache) {
-      if (!_memCacheSvg.containsKey(url) || _memCacheSvg[url] == null) {
-        http.Response response = await http.get(uri);
-        _memCacheSvg[url] = response.body;
-      }
-      return _memCacheSvg[url]!;
-    } else {
-      http.Response response = await http.get(uri);
-      return response.body;
-    }
   }
 }
